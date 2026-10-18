@@ -3,88 +3,310 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VISION PRO AI</title>
+    <title>VISION PRO AI - Análise Técnica Avançada</title>
+    <!-- Importar a biblioteca do Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
+        :root {
+            --gold: #D4AF37;
+            --gold-glow: rgba(212, 175, 55, 0.3);
+            --dark: #0a0a0a;
+            --gray: #888888;
+            --panel: #151515;
+        }
         body {
-            background-color: #0a0a0a;
+            background-color: var(--dark);
             color: #ffffff;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            background-image: radial-gradient(circle at 50% 0%, #1a1a1a 0%, var(--dark) 70%);
+        }
+        .header {
+            width: 100%;
+            padding: 20px 0;
+            text-align: center;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            color: var(--gold);
+            letter-spacing: 3px;
+            text-shadow: 0 0 10px var(--gold-glow);
+        }
+        .main-container {
+            flex: 1;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 100vh;
-            margin: 0;
+            width: 100%;
+            max-width: 600px;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .hero-card {
+            background: var(--panel);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 16px;
+            padding: 40px 30px;
             text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 20px var(--gold-glow);
+            width: 100%;
+            box-sizing: border-box;
         }
-        .container {
-            background-color: #151515;
-            padding: 40px;
-            border-radius: 12px;
-            border: 1px solid #D4AF37;
-            box-shadow: 0px 4px 20px rgba(212, 175, 55, 0.1);
-            max-width: 90%;
-        }
-        h1 {
-            color: #D4AF37;
+        .hero-title {
             font-size: 2.2rem;
-            letter-spacing: 2px;
             margin-top: 0;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
+            background: linear-gradient(45deg, #fff, var(--gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
-        p {
-            color: #aaaaaa;
-            margin-bottom: 30px;
-            font-size: 1rem;
+        .hero-subtitle {
+            font-size: 1.1rem;
+            color: #ccc;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+        .features {
+            text-align: left;
+            margin: 0 auto 30px auto;
+            display: inline-block;
+            color: #aaa;
+            font-size: 0.95rem;
+            line-height: 1.8;
+        }
+        .features span {
+            color: var(--gold);
+            font-weight: bold;
         }
         .btn-google {
             background-color: #ffffff;
-            color: #333333;
-            padding: 12px 24px;
-            border-radius: 6px;
+            color: #000;
+            padding: 15px 30px;
+            border-radius: 8px;
             text-decoration: none;
             font-weight: bold;
-            font-size: 1rem;
+            font-size: 1.1rem;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 80%;
-            transition: all 0.2s ease;
+            width: 100%;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-sizing: border-box;
         }
         .btn-google:hover {
-            background-color: #f0f0f0;
             transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255,255,255,0.2);
         }
         .btn-google svg {
-            width: 20px;
-            height: 20px;
-            margin-right: 10px;
+            width: 24px;
+            height: 24px;
+            margin-right: 12px;
         }
-        .status {
-            margin-top: 20px;
-            font-size: 0.8rem;
-            color: #4CAF50;
+        .disclaimer {
+            font-size: 0.75rem;
+            color: #555;
+            margin-top: 25px;
+            line-height: 1.4;
+        }
+        
+        /* Dashboard Styles (Hidden by default) */
+        #dashboardView {
+            display: none;
+            width: 100%;
+        }
+        .dash-card {
+            background: var(--panel);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            background: rgba(255, 152, 0, 0.1);
+            color: #ff9800;
+            border: 1px solid #ff9800;
+            margin: 15px 0;
+        }
+        .payment-info {
+            background: rgba(0,0,0,0.3);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: left;
+            font-size: 0.95rem;
+            color: #ccc;
+        }
+        .payment-info h4 {
+            color: var(--gold);
+            margin-top: 0;
+        }
+        .btn-outline {
+            background: transparent;
+            color: var(--gray);
+            border: 1px solid var(--gray);
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 10px;
+        }
+        .btn-outline:hover {
+            color: #fff;
+            border-color: #fff;
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
+    <div class="header">
         <h1>VISION PRO AI</h1>
-        <p>Análise Técnica e Geração de Sinais</p>
-        
-        <a href="#" class="btn-google">
-            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-            </svg>
-            Entrar com Google
-        </a>
-
-        <div class="status">● Sistema Online e Seguro</div>
     </div>
 
+    <div class="main-container">
+        
+        <!-- VISTA 1: ECRÃ DE LOGIN / APRESENTAÇÃO -->
+        <div id="loginView" class="hero-card">
+            <h2 class="hero-title">Eleve o Seu Nível de Trading</h2>
+            <p class="hero-subtitle">Não dependa da sorte. Utilize lógica de preço, indicadores avançados e análise técnica profissional para Opções Binárias.</p>
+            
+            <div class="features">
+                <div><span>✓</span> Sinais Baseados em EMA, RSI e MACD</div>
+                <div><span>✓</span> Estratégia Comprovada em Tempo Real</div>
+                <div><span>✓</span> Identificação de Oportunidades Claras</div>
+                <div><span>✓</span> Comunidade Focada na Consistência</div>
+            </div>
+
+            <button id="loginBtn" class="btn-google">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                </svg>
+                Começar Agora com Google
+            </button>
+            <div id="loginStatus" style="color: #ff9800; margin-top: 15px; font-size: 0.9rem;"></div>
+
+            <p class="disclaimer">
+                Aviso de Risco: A negociação em mercados financeiros envolve riscos. O VISION PRO AI é uma ferramenta de análise técnica e não promete 100% de acerto. Utilize gestão de risco adequada.
+            </p>
+        </div>
+
+        <!-- VISTA 2: PAINEL DO UTILIZADOR (Após Login) -->
+        <div id="dashboardView">
+            <div class="dash-card">
+                <h2 style="color: var(--gold); margin-top: 0;">Painel de Controlo</h2>
+                <p id="userEmailDisplay" style="color: #fff; font-weight: bold;"></p>
+                
+                <div class="status-badge">
+                    Estado: Pendente de Pagamento
+                </div>
+
+                <div class="payment-info">
+                    <h4>Ativação da Subscrição</h4>
+                    <p>Para libertar o seu acesso à plataforma de sinais e análises avançadas (Mensalidade: <strong>5.000 Kz</strong>):</p>
+                    <ol style="padding-left: 20px; margin-bottom: 0;">
+                        <li>Faça a transferência via <strong>Multicaixa Express</strong> para o IBAN fornecido pelo Suporte.</li>
+                        <li>Envie o comprovativo para a nossa equipa indicando o email que usou para entrar.</li>
+                        <li>O seu acesso será ativado no sistema no prazo de 2 a 12 horas úteis.</li>
+                    </ol>
+                </div>
+
+                <button id="logoutBtn" class="btn-outline">Terminar Sessão</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // CONFIGURAÇÃO DO SUPABASE (Com as tuas chaves oficiais)
+        const SUPABASE_URL = "https://ggfravgphwomisudjboz.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdnZnJhdmdwaHdvbWlzdWRqYm96Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIzMjA5MDgsImV4cCI6MjEwNzg5NjkwOH0.cSJvQlJ6nS_ZZfOj0jBkEbay8lDmATSImFYGgIx7HeM";
+
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // ELEMENTOS DO ECRÃ
+        const loginView = document.getElementById('loginView');
+        const dashboardView = document.getElementById('dashboardView');
+        const loginBtn = document.getElementById('loginBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const userEmailDisplay = document.getElementById('userEmailDisplay');
+        const loginStatus = document.getElementById('loginStatus');
+
+        // FUNÇÃO: LOGIN
+        async function signInWithGoogle() {
+            try {
+                loginStatus.innerText = "A redirecionar para o Google...";
+                const { data, error } = await supabase.auth.signInWithOAuth({
+                    provider: 'google',
+                    options: { redirectTo: window.location.origin }
+                });
+                if (error) throw error;
+            } catch (error) {
+                console.error("Erro:", error.message);
+                loginStatus.innerText = "Erro ao iniciar sessão. Tente novamente.";
+            }
+        }
+
+        // FUNÇÃO: LOGOUT
+        async function signOut() {
+            try {
+                const { error } = await supabase.auth.signOut();
+                if (error) throw error;
+                checkSession(); // Volta ao ecrã inicial
+            } catch (error) {
+                console.error("Erro no logout:", error.message);
+            }
+        }
+
+        // FUNÇÃO: VERIFICAR ESTADO DA SESSÃO
+        async function checkSession() {
+            const { data: { session } } = await supabase.auth.getSession();
+            
+            if (session) {
+                // Utilizador Logado -> Esconde a página inicial e mostra o Painel
+                loginView.style.display = 'none';
+                dashboardView.style.display = 'block';
+                userEmailDisplay.innerText = session.user.email;
+            } else {
+                // Não Logado -> Mostra a página inicial
+                loginView.style.display = 'block';
+                dashboardView.style.display = 'none';
+                loginStatus.innerText = "";
+            }
+        }
+
+        // EVENTOS DOS BOTÕES
+        loginBtn.addEventListener('click', signInWithGoogle);
+        logoutBtn.addEventListener('click', signOut);
+
+        // ESCUTAR MUDANÇAS NA AUTENTICAÇÃO
+        supabase.auth.onAuthStateChange((event, session) => {
+            checkSession();
+        });
+
+        // ARRANCAR A PÁGINA
+        checkSession();
+    </script>
 </body>
 </html>
